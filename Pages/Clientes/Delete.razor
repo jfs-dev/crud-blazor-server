@@ -1,0 +1,61 @@
+﻿@page "/clientes/delete/{id:int}"
+@using crud_blazor_server.Models
+@using crud_blazor_server.Data
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext Context;
+@inject NavigationManager NavManager
+
+<h1>Excluir @model?.Nome?</h1>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+<EditForm Model="@model" OnValidSubmit="@HandleSubmit">
+    <div class="mb-3">
+        <label for="Nome" class="form-label">Nome</label>
+        <InputText readonly class="form-control" type="text" id="Nome" @bind-Value="model.Nome"/>
+    </div>
+    <div class="mb-3">
+        <label for="Email" class="form-label">e-mail</label>
+        <InputText readonly class="form-control" type="email" id="Email" @bind-Value="model.Email"/>
+    </div>
+
+    <button class="btn btn-danger" type="submit">Excluir</button>
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Cliente? model = new();
+    private string? errorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await Context.Clientes.AsNoTracking().FirstOrDefaultAsync(x => x.Id == Id);
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            var clie = await Context.Clientes.FirstOrDefaultAsync(x => x.Id == Id);
+            if (clie is null)
+                throw new Exception("Cliente não encontrado!");
+
+            Context.Clientes.Remove(clie);
+            await Context.SaveChangesAsync();
+
+            NavManager.NavigateTo("/clientes");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}

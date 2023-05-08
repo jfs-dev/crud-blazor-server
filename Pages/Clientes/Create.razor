@@ -13,10 +13,12 @@
     <div class="mb-3">
         <label for="Nome" class="form-label">Nome</label>
         <InputText class="form-control" type="text" id="Nome" @bind-Value="model.Nome"/>
+        <ValidationMessage For="@(() => model.Nome)"/>
     </div>
     <div class="mb-3">
         <label for="Email" class="form-label">e-mail</label>
         <InputText class="form-control" type="email" id="Email" @bind-Value="model.Email"/>
+        <ValidationMessage For="@(() => model.Email)"/>
     </div>
 
     @if (!string.IsNullOrEmpty(errorMessage))
